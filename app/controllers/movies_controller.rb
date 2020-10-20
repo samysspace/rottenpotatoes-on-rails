@@ -7,11 +7,15 @@ class MoviesController < ApplicationController
   end
 
   def index
+    # byebug
     @all_ratings = Movie.all_ratings
     if params[:ratings]
       @ratings_to_show = params[:ratings].keys
+      session[:ratings] = params[:ratings]
+    elsif session[:ratings]
+      @ratings_to_show = session[:ratings].keys
     else
-      @ratings_to_show = []
+      @ratings_to_show = @all_ratings
     end
     
     @ratings_to_show.each do |rating|
@@ -20,6 +24,9 @@ class MoviesController < ApplicationController
     
     if params[:sort]
       @movies = Movie.with_ratings(@ratings_to_show).order(params[:sort])
+      session[:sort] = params[:sort]
+    elsif session[:sort]
+      @movies = Movie.with_ratings(@ratings_to_show).order(session[:sort])
     else
       @movies = Movie.with_ratings(@ratings_to_show)
     end
